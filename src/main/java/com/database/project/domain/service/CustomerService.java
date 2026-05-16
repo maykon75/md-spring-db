@@ -7,12 +7,16 @@ import com.database.project.domain.model.Customer;
 import com.database.project.exception.NotFoundException;
 import com.database.project.infrastructure.repository.CustomerRepository;
 import com.database.project.infrastructure.repository.ICustomer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class CustomerService implements ICustomer {
+
+    private static final Logger log = LoggerFactory.getLogger(CustomerService.class);
 
     private final CustomerRepository repository;
 
@@ -26,10 +30,10 @@ public class CustomerService implements ICustomer {
 
     @Override
     public CustomerResponseDTO get(Long id) {
-        if(!repository.existsById(id)){
-            throw new NotFoundException(id, "Id not found");
-        }
-        return mapper.customerResponseDTO(repository.getReferenceById(id));
+        log.info("id {}", id);
+        return repository.findById(id).
+                map(mapper::customerResponseDTO).
+                orElseThrow(() -> new NotFoundException(id, "Id not found"));
     }
 
     @Override

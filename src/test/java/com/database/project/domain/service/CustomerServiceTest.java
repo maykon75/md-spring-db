@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 class CustomerServiceTest {
@@ -50,8 +51,7 @@ class CustomerServiceTest {
 
     @Test
     void testGetSuccess() {
-        when(repository.existsById(1L)).thenReturn(true);
-        when(repository.getReferenceById(1L)).thenReturn(customer);
+        when(repository.findById(1L)).thenReturn(Optional.of(customer));
         when(mapper.customerResponseDTO(customer)).thenReturn(responseDTO);
 
         CustomerResponseDTO result = service.get(1L);
@@ -63,11 +63,11 @@ class CustomerServiceTest {
 
     @Test
     void testGetNotFoundException() {
-        when(repository.existsById(1L)).thenReturn(false);
+        when(repository.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> service.get(1L));
 
-        verify(repository).existsById(1L);
+        verify(repository).findById(1L);
     }
 
     @Test
